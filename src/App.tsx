@@ -2,7 +2,7 @@ import confetti from 'canvas-confetti';
 import { useEffect, useState } from 'react';
 
 const QUESTION_GIF = 'https://i.pinimg.com/originals/74/97/4e/74974e68289b66fe5b9af8b6ac5c332c.gif';
-const SUCCESS_GIF_URL = 'https://media1.tenor.com/m/Rxz2fN_-PrQAAAAd/congratulations-celebrate.gif';
+const SUCCESS_GIF_URL = 'https://c.tenor.com/Rxz2fN_-PrQAAAAd/tenor.gif';
 
 function App() {
 	const [noCount, setNoCount] = useState(0);
@@ -14,19 +14,18 @@ function App() {
 
 	const handleNoClick = () => {
 		if (noCount >= maxNoClicks) return;
-
 		const newCount = noCount + 1;
 		setNoCount(newCount);
 
 		// Yes gets bigger
 		setYesScale(1 + newCount * 0.35);
 
-		// No gets smaller and runs away
+		// No gets smaller
 		setNoScale(Math.max(0.3, 1 - newCount * 0.18));
 
-		// Move No button to random position
-		const randomX = Math.random() * 200 - 100;
-		const randomY = Math.random() * 180 - 90;
+		// Move No button (bigger range on mobile for fun)
+		const randomX = (Math.random() * 300 - 150) * (window.innerWidth < 640 ? 0.7 : 1);
+		const randomY = (Math.random() * 240 - 120) * (window.innerWidth < 640 ? 0.6 : 1);
 		setNoPosition({ x: randomX, y: randomY });
 
 		if (newCount >= maxNoClicks) {
@@ -36,7 +35,6 @@ function App() {
 
 	const handleYesClick = () => {
 		setAccepted(true);
-		// Launch confetti
 		confetti({
 			particleCount: 120,
 			spread: 70,
@@ -47,7 +45,6 @@ function App() {
 
 	useEffect(() => {
 		if (accepted) {
-			// Extra big confetti
 			setTimeout(() => {
 				confetti({
 					particleCount: 200,
@@ -63,8 +60,8 @@ function App() {
 			<div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-100 to-red-50 p-4 text-center">
 				<h1 className="text-5xl md:text-7xl font-bold text-red-600 mb-8 animate-bounce">Yayyyy! ❤️❤️❤️</h1>
 				<img
-					src={SUCCESS_GIF_URL} // ← change to your direct link
-					alt="Happy hugging Stuart Minion celebrating our love"
+					src={SUCCESS_GIF_URL}
+					alt="Happy celebration"
 					className="w-64 md:w-96 mb-8 rounded-2xl shadow-2xl"
 				/>
 				<p className="text-3xl md:text-5xl font-playful text-pink-700 mb-4">You're officially my Valentine!</p>
@@ -83,7 +80,8 @@ function App() {
 				className="w-56 md:w-80 mb-10 rounded-3xl shadow-xl border-8 border-white"
 			/>
 
-			<div className="flex flex-col sm:flex-row gap-10 md:gap-24 items-center justify-center relative w-full max-w-4xl">
+			<div className="flex flex-col sm:flex-row gap-10 md:gap-24 items-center justify-center w-full max-w-4xl">
+				{/* Yes button - always in flow */}
 				<button
 					onClick={handleYesClick}
 					style={{ transform: `scale(${yesScale})` }}
@@ -91,13 +89,14 @@ function App() {
 					Yes 😍
 				</button>
 
+				{/* No button - no absolute, just transform for movement */}
 				<button
 					onClick={handleNoClick}
 					style={{
 						transform: `scale(${noScale}) translate(${noPosition.x}px, ${noPosition.y}px)`,
 						transition: 'all 0.4s ease-out',
 					}}
-					className={`bg-red-500 hover:bg-red-600 text-white text-xl md:text-3xl font-bold py-4 px-10 rounded-full shadow-lg absolute sm:static ${
+					className={`bg-red-500 hover:bg-red-600 text-white text-xl md:text-3xl font-bold py-4 px-10 rounded-full shadow-lg ${
 						noCount >= maxNoClicks ? 'opacity-0 pointer-events-none' : ''
 					}`}>
 					No 😔
